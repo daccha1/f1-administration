@@ -1,4 +1,6 @@
+using f1_administraiton_API.Contracts;
 using f1_administraiton_API.Data;
+using f1_administraiton_API.Repositories;
 
 namespace f1_administraiton_API
 {
@@ -10,6 +12,8 @@ namespace f1_administraiton_API
 
 			// Add services to the container.
 			builder.Services.AddSqlServer<RaceDbContext>(builder.Configuration.GetConnectionString("DefaultConnection"));
+			
+			builder.Services.AddScoped<ILocationRepository, LocationSQLRepository>();
 
 			builder.Services.AddControllers();
 
