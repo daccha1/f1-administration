@@ -7,6 +7,6 @@
 		public decimal EuroBasePrice { get; set; }	
 		public string AdditionalInfo { get; set; }
 		public int LocationId { get; set; }			
-		public Location Location { get; set; }		
+		public Location? Location { get; set; }		
 	}
 }
