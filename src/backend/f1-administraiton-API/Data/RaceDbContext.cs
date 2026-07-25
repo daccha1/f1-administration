@@ -23,5 +23,58 @@ namespace f1_administraiton_API.Data
 		public DbSet<RaceDay> RaceDays { get; set; }
 		public DbSet<SeatingZone> SeatingZones { get; set; }
 
+		protected override void OnModelCreating(ModelBuilder modelBuilder)
+		{
+			base.OnModelCreating(modelBuilder);
+
+			modelBuilder.Entity<Location>().HasData(
+				new Location
+				{
+					Id = 1,
+					Coutry = "Monaco",
+					City = "Monte Carlo",
+					CircuitName = "Circuit de Monaco"
+				},
+				new Location
+				{
+					Id = 2,
+					Coutry = "Austria",
+					City = "Spielberg",
+					CircuitName = "Red Bull Ring"
+				},
+				new Location
+				{
+					Id = 3,
+					Coutry = "United Arab Emirates",
+					City = "Abu Dhabi",
+					CircuitName = "Yas Marina Circuit"
+				});
+
+			modelBuilder.Entity<Race>().HasData(
+				new Race
+				{
+					Id = 1,
+					GrandPrixName = "Monaco Grand Prix",
+					EuroBasePrice = 500.00m,
+					AdditionalInfo = "Monaco street circuit race.",
+					LocationId = 1
+				},
+				new Race
+				{
+					Id = 2,
+					GrandPrixName = "Red Bull Ring",
+					EuroBasePrice = 250.00m,
+					AdditionalInfo = "Austrian Grand Prix race.",
+					LocationId = 2
+				},
+				new Race
+				{
+					Id = 3,
+					GrandPrixName = "Abu Dhabi GP",
+					EuroBasePrice = 350.00m,
+					AdditionalInfo = "Season finale at Yas Marina Circuit.",
+					LocationId = 3
+				});
+		}
 	}
 }

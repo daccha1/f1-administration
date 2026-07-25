@@ -1,50 +1,44 @@
-﻿using f1_administraiton_API.Contracts;
-using f1_administraiton_API.Models;
-using f1_administraiton_API.Repositories;
+using f1_administraiton_API.Contracts;
+using f1_administraiton_API.DTOs;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Query;
 
 namespace f1_administraiton_API.Controllers
 {
 	[ApiController]
 	[Route("[controller]")]
-	public class LocationsController : ControllerBase
+	public class LocationsController(ILocationRepository repository) : ControllerBase
 	{
-		ILocationRepository repository;
-		public LocationsController(ILocationRepository repository)
+		[HttpGet("get-all")]
+		public async Task<ActionResult<List<LocationDto>>> GetLocations()
 		{
-			this.repository = repository;
+			var locations = await repository.GetLocations();
+			return locations is null ? StatusCode(StatusCodes.Status500InternalServerError) : Ok(locations.Select(x => x.ToDto()).ToList());
 		}
 
-		[HttpGet("/get-all")]
-		public async Task<List<Location>> GetLocations()
+		[HttpGet("id/{id}")]
+		public async Task<ActionResult<LocationDto>> GetLocationById(int id)
 		{
-			return await repository.GetLocations() ?? null;
+			var location = await repository.GetLocationById(id);
+			return location is null ? NotFound() : Ok(location.ToDto());
 		}
 
-		[HttpGet("/id/{id}")]
-		public async Task<Location> GetLocationById(int id)
+		[HttpPut("update/{id}")]
+		public async Task<ActionResult<LocationDto>> UpdateLocation(int id, [FromBody] LocationRequestDto dto)
 		{
-			return await repository.GetLocationById(id) ?? null;
+			if (await repository.GetLocationById(id) is null) return NotFound();
+			var location = dto.ToEntity(); location.Id = id;
+			var updatedLocation = await repository.UpdateLocation(location);
+			return updatedLocation is null ? BadRequest() : Ok(updatedLocation.ToDto());
 		}
 
-		[HttpPut("/update")]
-		public async Task<Location> UpdateLocation([FromBody] Location newLocation)
+		[HttpPost("new")]
+		public async Task<ActionResult<LocationDto>> CreateLocation([FromBody] LocationRequestDto dto)
 		{
-			return await repository.UpdateLocation(newLocation) ?? null;
+			var location = await repository.CreateLocation(dto.ToEntity());
+			return location is null ? BadRequest() : CreatedAtAction(nameof(GetLocationById), new { id = location.Id }, location.ToDto());
 		}
 
-		[HttpPost("/new")]
-		public async Task<Location> CreateLocation([FromBody] Location newLocation)
-		{
-			return await repository.CreateLocation(newLocation) ?? null;
-		}
-
-		[HttpDelete("/delete/{id}")]
-		public async Task<bool> DeleteLocation(int id)
-		{
-			return await repository.DeleteLocation(id) ? true : false;
-		}
-
+		[HttpDelete("delete/{id}")]
+		public async Task<ActionResult> DeleteLocation(int id) => await repository.DeleteLocation(id) ? NoContent() : NotFound();
 	}
 }
