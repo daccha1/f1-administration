@@ -3,6 +3,7 @@
 	public class PaddockPass
 	{
 		public int Id { get; set; }
+		public int PassId { get; set; }
 		public Pass Pass { get; set; }
 		public string Secret { get; set; }
 		public bool GarageAccess { get; set; } = false;

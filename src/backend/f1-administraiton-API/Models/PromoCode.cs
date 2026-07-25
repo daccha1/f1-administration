@@ -12,7 +12,6 @@
 		public bool isValid { get; set; } = true;
 		public bool isActivated { get; set; } = false;
 		public double DiscountPercent { get; set; } = 0.05;
-		public int PassId { get; set; }
-		public Pass Pass { get; set; }
+		
 	}
 }
