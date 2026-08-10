@@ -9,5 +9,6 @@ namespace f1_administraiton_API.Contracts
 		public Task<List<PromoCode>> GetPromoCodes();
 		public Task<bool> DeletePromoCode(int id);
 		public Task<PromoCode> UpdatePromoCode(PromoCode updatedPromoCode);
+		public Task<PromoCode> UsePromoCode(int id);
 	}
 }

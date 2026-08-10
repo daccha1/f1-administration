@@ -40,5 +40,16 @@ namespace f1_administraiton_API.Controllers
 
 		[HttpDelete("delete/{id}")]
 		public async Task<ActionResult> DeletePaddockPass(int id) => await repository.DeletePaddockPass(id) ? NoContent() : NotFound();
+
+		[HttpGet("check-eligibility/{secret}")]
+		public async Task<ActionResult> CheckEligibility(string secret)
+		{
+			bool eligible = await repository.CheckEligibility(secret);
+
+			if (eligible) return Ok(true);
+
+			return NotFound(false);
+		}
+
 	}
 }

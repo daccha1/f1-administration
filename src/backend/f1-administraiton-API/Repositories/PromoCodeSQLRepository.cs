@@ -104,5 +104,26 @@ namespace f1_administraiton_API.Repositories
 				return null;
 			}
 		}
+
+		public async Task<PromoCode> UsePromoCode(int id)
+		{
+			try
+			{
+				var exists = await context.PromoCodes.Where(p => p.Id == id).FirstOrDefaultAsync();
+				if(exists == null)
+				{
+					return null;
+				}
+				exists.isActivated = true;
+				
+				context.PromoCodes.Update(exists);
+				await context.SaveChangesAsync();
+				return exists;
+			}
+			catch (Exception ex)
+			{
+				return null;
+			}
+		}
 	}
 }

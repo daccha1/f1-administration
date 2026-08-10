@@ -2,15 +2,19 @@ using f1_administraiton_API.Contracts;
 using f1_administraiton_API.Data;
 using f1_administraiton_API.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
 
 namespace f1_administraiton_API.Repositories
 {
 	public class PassSQLRepository : IPassRepository
 	{
 		RaceDbContext context;
-		public PassSQLRepository(RaceDbContext db)
+		IPromoCodeRepository promoRepository;
+		
+		public PassSQLRepository(RaceDbContext db, IPromoCodeRepository promoCodeRepository)
 		{
 			context = db;
+			promoRepository = promoCodeRepository;
 		}
 
 		public async Task<Pass> CreatePass(Pass newPass)
@@ -19,25 +23,33 @@ namespace f1_administraiton_API.Repositories
 			{
 				var currencyId = newPass.Currency?.Id ?? newPass.CurrenctId;
 				var currency = await context.Currencies.Where(c => c.Id == currencyId).FirstOrDefaultAsync();
-				var promoCode = await context.PromoCodes.Where(p => p.Id == newPass.PromoCodeId).FirstOrDefaultAsync();
-				if (currency == null || promoCode == null)
+
+				if (currency == null)
 				{
 					return null;
 				}
+
 				var passExists = await context.Passes.AnyAsync(p => p.Email == newPass.Email && p.isActive);
+				
 				if (passExists)
 				{
 					return null;
 				}
+
 				newPass.Currency = currency;
 				newPass.CurrenctId = currency.Id;
+
+				var promoCode = new PromoCode();
+
 				newPass.PromoCode = promoCode;
+
 				await context.Passes.AddAsync(newPass);
 				await context.SaveChangesAsync();
 				return newPass;
 			}
 			catch (Exception ex)
 			{
+				Debug.WriteLine(">>>>>>>>> EXCEPTION: " + ex.Message);
 				return null;
 			}
 		}

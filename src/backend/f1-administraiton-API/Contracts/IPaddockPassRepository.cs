@@ -9,5 +9,6 @@ namespace f1_administraiton_API.Contracts
 		public Task<List<PaddockPass>> GetPaddockPasses();
 		public Task<bool> DeletePaddockPass(int id);
 		public Task<PaddockPass> UpdatePaddockPass(PaddockPass updatedPaddockPass);
+		public Task<bool> CheckEligibility(string secret);
 	}
 }

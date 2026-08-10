@@ -14,6 +14,7 @@ namespace f1_administraiton_API.Models
 	{
 		[Range(1, 3, ErrorMessage = "Vrednost mora biti 1, 2 ili 3.")]
 		public int Id { get; set; }
+		public DateOnly Date { get; set; }
 		public int RaceId { get; set; }
 		public Race Race { get; set; }
 		public RaceDayAgenda Agenda { get; set; }
