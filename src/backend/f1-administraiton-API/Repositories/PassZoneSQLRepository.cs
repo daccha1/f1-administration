@@ -2,6 +2,7 @@ using f1_administraiton_API.Contracts;
 using f1_administraiton_API.Data;
 using f1_administraiton_API.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
 
 namespace f1_administraiton_API.Repositories
 {
@@ -18,26 +19,29 @@ namespace f1_administraiton_API.Repositories
 			try
 			{
 				var passId = newPassZone.Pass?.Id ?? 0;
-				var seatingZoneId = newPassZone.SeatingZone?.Id ?? 0;
+				var raceId = newPassZone.SeatingZone.RaceDay.RaceId;
+				var raceDayId = newPassZone.SeatingZone.RaceDay.Id;
+
 				var pass = await context.Passes.Where(p => p.Id == passId).FirstOrDefaultAsync();
-				var seatingZone = await context.SeatingZones.Where(s => s.Id == seatingZoneId).FirstOrDefaultAsync();
+				
+				var seatingZone = await context.SeatingZones.Where(s => s.RaceDay.Id == raceId && s.Id ==  raceDayId).FirstOrDefaultAsync();
+				
 				if (pass == null || seatingZone == null)
 				{
 					return null;
 				}
-				var passZoneExists = await context.PassAndZones.AnyAsync(p => p.Pass.Id == passId && p.SeatingZone.Id == seatingZoneId);
-				if (passZoneExists)
-				{
-					return null;
-				}
+								
 				newPassZone.Pass = pass;
 				newPassZone.SeatingZone = seatingZone;
+				
 				await context.PassAndZones.AddAsync(newPassZone);
 				await context.SaveChangesAsync();
+				
 				return newPassZone;
 			}
 			catch (Exception ex)
 			{
+				Debug.WriteLine(">>>>>> EX: " + ex.Message);	
 				return null;
 			}
 		}

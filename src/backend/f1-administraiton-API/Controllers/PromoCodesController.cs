@@ -40,5 +40,14 @@ namespace f1_administraiton_API.Controllers
 
 		[HttpDelete("delete/{id}")]
 		public async Task<ActionResult> DeletePromoCode(int id) => await repository.DeletePromoCode(id) ? NoContent() : NotFound();
+
+		[HttpPost("activate/{id}")]
+		public async Task<IActionResult> ActivatePromoCode(int id)
+		{
+			var promoCode = await repository.UsePromoCode(id);
+			if (promoCode == null) return NotFound();
+			return Ok(promoCode);
+		}
+
 	}
 }

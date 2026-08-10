@@ -17,17 +17,23 @@ namespace f1_administraiton_API.Repositories
 		{
 			try
 			{
-				var raceDayId = newSeatingZone.RaceDay?.Id ?? 0;
-				var raceDay = await context.RaceDays.Where(r => r.Id == raceDayId).FirstOrDefaultAsync();
+				var raceDayId = newSeatingZone.RaceDay.Id;
+				var raceId = newSeatingZone.RaceDay.RaceId;
+				
+				var raceDay = await context.RaceDays.Where(r => r.Id == raceDayId && r.RaceId == raceId).FirstOrDefaultAsync();
+				
 				if (raceDay == null || newSeatingZone.Capacity <= 0)
 				{
 					return null;
 				}
+
 				var seatingZoneExists = await context.SeatingZones.AnyAsync(s => s.RaceDay.Id == raceDayId && s.SeatingType == newSeatingZone.SeatingType);
+
 				if (seatingZoneExists)
 				{
 					return null;
 				}
+
 				newSeatingZone.RaceDay = raceDay;
 				await context.SeatingZones.AddAsync(newSeatingZone);
 				await context.SaveChangesAsync();

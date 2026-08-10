@@ -24,16 +24,19 @@ namespace f1_administraiton_API.DTOs
 
 	public class RaceDayRequestDto
 	{
+		public int Id { get; set; }
 		public int RaceId { get; set; }
+		public DateOnly Date { get; set; }
 		public RaceDayAgenda Agenda { get; set; }
 	}
 
 	public class SeatingZoneRequestDto
 	{
+		public int RaceId { get; set; }
 		public int RaceDayId { get; set; }
 		public SeatingType SeatingType { get; set; }
 		public int Capacity { get; set; }
-		public string Benefits { get; set; } = string.Empty;
+		public List<string> Benefits { get; set; }
 	}
 
 	public class PromoCodeRequestDto
@@ -79,6 +82,8 @@ namespace f1_administraiton_API.DTOs
 	{
 		public int PassId { get; set; }
 		public int SeatingZoneId { get; set; }
+		public int RaceDayId { get; set; }
+		public int RaceId { get; set; }
 		public string AdditionalInformation { get; set; } = string.Empty;
 	}
 }

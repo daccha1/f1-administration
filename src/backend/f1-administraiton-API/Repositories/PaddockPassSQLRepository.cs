@@ -13,6 +13,23 @@ namespace f1_administraiton_API.Repositories
 			context = db;
 		}
 
+		public async Task<bool> CheckEligibility(string secret)
+		{
+			try
+			{
+				var passExist = await context.Passes.Where(p => p.Secret == secret).FirstOrDefaultAsync();
+
+				if (passExist != null) return true;
+
+				return false;
+
+			}
+			catch (Exception ex)
+			{
+				return false;
+			}
+		}
+
 		public async Task<PaddockPass> CreatePaddockPass(PaddockPass newPaddockPass)
 		{
 			try

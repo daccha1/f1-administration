@@ -13,7 +13,8 @@ namespace f1_administraiton_API.Models
 		public int Id { get; set; }
 		public RaceDay RaceDay { get; set; }
 		public SeatingType SeatingType { get; set; }
+		public decimal Price { get; set; } // it is calculated by the Race's base price + additional fee based on seating zone	
 		public int Capacity { get; set; }
-		public string Benefits { get; set; } // sta se dobija sve u toj zoni sedenja (ne toliko bitna stvar)
+		public List<string> Benefits { get; set; } // benefits for that specific seating zone
 	}
 }
