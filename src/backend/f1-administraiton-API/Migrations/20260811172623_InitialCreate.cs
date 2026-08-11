@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace f1_administraiton_API.Migrations
 {
     /// <inheritdoc />
@@ -119,14 +121,14 @@ namespace f1_administraiton_API.Migrations
                 name: "RaceDays",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<int>(type: "int", nullable: false),
                     RaceId = table.Column<int>(type: "int", nullable: false),
+                    Date = table.Column<DateOnly>(type: "date", nullable: false),
                     Agenda = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_RaceDays", x => x.Id);
+                    table.PrimaryKey("PK_RaceDays", x => new { x.RaceId, x.Id });
                     table.ForeignKey(
                         name: "FK_RaceDays_Races_RaceId",
                         column: x => x.RaceId,
@@ -167,21 +169,22 @@ namespace f1_administraiton_API.Migrations
                 name: "SeatingZones",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<int>(type: "int", nullable: false),
                     RaceDayId = table.Column<int>(type: "int", nullable: false),
+                    RaceId = table.Column<int>(type: "int", nullable: false),
                     SeatingType = table.Column<int>(type: "int", nullable: false),
+                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Capacity = table.Column<int>(type: "int", nullable: false),
                     Benefits = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_SeatingZones", x => x.Id);
+                    table.PrimaryKey("PK_SeatingZones", x => new { x.RaceId, x.RaceDayId, x.Id });
                     table.ForeignKey(
-                        name: "FK_SeatingZones_RaceDays_RaceDayId",
-                        column: x => x.RaceDayId,
+                        name: "FK_SeatingZones_RaceDays_RaceId_RaceDayId",
+                        columns: x => new { x.RaceId, x.RaceDayId },
                         principalTable: "RaceDays",
-                        principalColumn: "Id",
+                        principalColumns: new[] { "RaceId", "Id" },
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -191,6 +194,8 @@ namespace f1_administraiton_API.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    SeatingZoneRaceId = table.Column<int>(type: "int", nullable: false),
+                    SeatingZoneRaceDayId = table.Column<int>(type: "int", nullable: false),
                     SeatingZoneId = table.Column<int>(type: "int", nullable: false),
                     PassId = table.Column<int>(type: "int", nullable: false),
                     AdditionalInformation = table.Column<string>(type: "nvarchar(max)", nullable: false)
@@ -205,11 +210,31 @@ namespace f1_administraiton_API.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_PassAndZones_SeatingZones_SeatingZoneId",
-                        column: x => x.SeatingZoneId,
+                        name: "FK_PassAndZones_SeatingZones_SeatingZoneRaceId_SeatingZoneRaceDayId_SeatingZoneId",
+                        columns: x => new { x.SeatingZoneRaceId, x.SeatingZoneRaceDayId, x.SeatingZoneId },
                         principalTable: "SeatingZones",
-                        principalColumn: "Id",
+                        principalColumns: new[] { "RaceId", "RaceDayId", "Id" },
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.InsertData(
+                table: "Locations",
+                columns: new[] { "Id", "CircuitName", "City", "Coutry" },
+                values: new object[,]
+                {
+                    { 1, "Circuit de Monaco", "Monte Carlo", "Monaco" },
+                    { 2, "Red Bull Ring", "Spielberg", "Austria" },
+                    { 3, "Yas Marina Circuit", "Abu Dhabi", "United Arab Emirates" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Races",
+                columns: new[] { "Id", "AdditionalInfo", "EuroBasePrice", "GrandPrixName", "LocationId" },
+                values: new object[,]
+                {
+                    { 1, "Monaco street circuit race.", 500.00m, "Monaco Grand Prix", 1 },
+                    { 2, "Austrian Grand Prix race.", 250.00m, "Red Bull Ring", 2 },
+                    { 3, "Season finale at Yas Marina Circuit.", 350.00m, "Abu Dhabi GP", 3 }
                 });
 
             migrationBuilder.CreateIndex(
@@ -223,9 +248,9 @@ namespace f1_administraiton_API.Migrations
                 column: "PassId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_PassAndZones_SeatingZoneId",
+                name: "IX_PassAndZones_SeatingZoneRaceId_SeatingZoneRaceDayId_SeatingZoneId",
                 table: "PassAndZones",
-                column: "SeatingZoneId");
+                columns: new[] { "SeatingZoneRaceId", "SeatingZoneRaceDayId", "SeatingZoneId" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Passes_CurrencyId",
@@ -238,19 +263,9 @@ namespace f1_administraiton_API.Migrations
                 column: "PromoCodeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_RaceDays_RaceId",
-                table: "RaceDays",
-                column: "RaceId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Races_LocationId",
                 table: "Races",
                 column: "LocationId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_SeatingZones_RaceDayId",
-                table: "SeatingZones",
-                column: "RaceDayId");
         }
 
         /// <inheritdoc />

@@ -1,5 +1,6 @@
 using f1_administraiton_API.Contracts;
 using f1_administraiton_API.DTOs;
+using f1_administraiton_API.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace f1_administraiton_API.Controllers
@@ -9,10 +10,10 @@ namespace f1_administraiton_API.Controllers
 	public class SeatingZonesController(ISeatingZoneRepository repository) : ControllerBase
 	{
 		[HttpGet("get-all")]
-		public async Task<ActionResult<List<SeatingZoneDto>>> GetSeatingZones()
+		public async Task<ActionResult<List<SeatingZone>>> GetSeatingZones()
 		{
 			var seatingZones = await repository.GetSeatingZones();
-			return seatingZones is null ? StatusCode(StatusCodes.Status500InternalServerError) : Ok(seatingZones.Select(x => x.ToDto()).ToList());
+			return seatingZones is null ? StatusCode(StatusCodes.Status500InternalServerError) : seatingZones;
 		}
 
 		[HttpGet("id/{id}")]

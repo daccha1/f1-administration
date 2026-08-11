@@ -1,5 +1,6 @@
 using f1_administraiton_API.Contracts;
 using f1_administraiton_API.DTOs;
+using f1_administraiton_API.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace f1_administraiton_API.Controllers
@@ -32,10 +33,10 @@ namespace f1_administraiton_API.Controllers
 		}
 
 		[HttpPost("new")]
-		public async Task<ActionResult<PassZoneDto>> CreatePassZone([FromBody] PassZoneRequestDto dto)
+		public async Task<ActionResult<PassZone>> CreatePassZone([FromBody] PassZoneRequestDto dto)
 		{
 			var passZone = await repository.CreatePassZone(dto.ToEntity());
-			return passZone is null ? BadRequest() : CreatedAtAction(nameof(GetPassZoneById), new { id = passZone.Id }, passZone.ToDto());
+			return passZone is null ? BadRequest() : passZone;
 		}
 
 		[HttpDelete("delete/{id}")]

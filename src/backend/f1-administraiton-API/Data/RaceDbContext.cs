@@ -26,7 +26,42 @@ namespace f1_administraiton_API.Data
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
 			base.OnModelCreating(modelBuilder);
+			
+			modelBuilder.Entity<RaceDay>(builder =>
+			{
+				// Kompozitni primarni ključ za dan trke
+				builder.HasKey(rd => new { rd.RaceId, rd.Id });
 
+				// Onemogućavamo auto-increment jer se Id unosi ručno (1, 2 ili 3)
+				builder.Property(rd => rd.Id)
+					   .ValueGeneratedNever();
+
+				// Sprečavamo i da se RaceId automatski generiše
+				builder.Property(rd => rd.RaceId)
+					   .ValueGeneratedNever();
+			});
+			// 
+			// 1. SeatingZone Konfiguracija
+			// 
+			modelBuilder.Entity<SeatingZone>(builder =>
+			{
+
+				// no-autoincr. jer se za svaki dan trke krece od 0
+				builder.Property(sz => sz.Id)
+				.ValueGeneratedNever();
+
+				// Kompozitni primarni ključ za zonu
+				builder.HasKey(sz => new { sz.RaceId, sz.RaceDayId, sz.Id });
+
+				// Eksplicitno povezivanje sa RaceDay čiji je primarni ključ (RaceId, Id)
+				builder.HasOne(sz => sz.RaceDay)
+					   .WithMany() // ili .WithMany(rd => rd.SeatingZones) ako vraćate listu
+					   .HasForeignKey(sz => new { sz.RaceId, sz.RaceDayId })
+					   .HasPrincipalKey(rd => new { rd.RaceId, rd.Id }); // OVO JE KLJUČNO!
+
+			});
+
+	
 			modelBuilder.Entity<Location>().HasData(
 				new Location
 				{

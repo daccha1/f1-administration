@@ -19,7 +19,7 @@ namespace f1_administraiton_API.Repositories
 			{
 				var raceDayId = newSeatingZone.RaceDay.Id;
 				var raceId = newSeatingZone.RaceDay.RaceId;
-				
+
 				var raceDay = await context.RaceDays.Where(r => r.Id == raceDayId && r.RaceId == raceId).FirstOrDefaultAsync();
 				
 				if (raceDay == null || newSeatingZone.Capacity <= 0)
@@ -27,7 +27,19 @@ namespace f1_administraiton_API.Repositories
 					return null;
 				}
 
-				var seatingZoneExists = await context.SeatingZones.AnyAsync(s => s.RaceDay.Id == raceDayId && s.SeatingType == newSeatingZone.SeatingType);
+				var seatingZones = await context.SeatingZones.Where(sz => sz.RaceId == raceId && sz.RaceDayId == raceDayId).ToListAsync();
+				
+				if (seatingZones == null || seatingZones.Count == 0)
+				{
+					newSeatingZone.Id = 1;
+				}
+				else
+				{
+					var id = seatingZones.Select(sz => sz.Id).Max();
+					newSeatingZone.Id = id + 1;
+				}
+
+				var seatingZoneExists = await context.SeatingZones.AnyAsync(s => s.RaceDay.Id == raceDayId && s.SeatingType == newSeatingZone.SeatingType && s.RaceId == raceId && s.Id == newSeatingZone.Id);
 
 				if (seatingZoneExists)
 				{
@@ -81,7 +93,7 @@ namespace f1_administraiton_API.Repositories
 		{
 			try
 			{
-				var seatingZones = await context.SeatingZones.Include(s => s.RaceDay).ThenInclude(r => r.Race).ThenInclude(r => r.Location).ToListAsync();
+				var seatingZones = await context.SeatingZones.ToListAsync();
 				return seatingZones;
 			}
 			catch (Exception ex)

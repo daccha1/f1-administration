@@ -12,8 +12,8 @@ using f1_administraiton_API.Data;
 namespace f1_administraiton_API.Migrations
 {
     [DbContext(typeof(RaceDbContext))]
-    [Migration("20260810205212_Model-Fixing")]
-    partial class ModelFixing
+    [Migration("20260811181942_FixingModels")]
+    partial class FixingModels
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -219,11 +219,17 @@ namespace f1_administraiton_API.Migrations
                     b.Property<int>("SeatingZoneId")
                         .HasColumnType("int");
 
+                    b.Property<int>("SeatingZoneRaceDayId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SeatingZoneRaceId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("PassId");
 
-                    b.HasIndex("SeatingZoneId");
+                    b.HasIndex("SeatingZoneRaceId", "SeatingZoneRaceDayId", "SeatingZoneId");
 
                     b.ToTable("PassAndZones");
                 });
@@ -311,11 +317,11 @@ namespace f1_administraiton_API.Migrations
 
             modelBuilder.Entity("f1_administraiton_API.Models.RaceDay", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int>("RaceId")
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
 
                     b.Property<int>("Agenda")
                         .HasColumnType("int");
@@ -323,23 +329,21 @@ namespace f1_administraiton_API.Migrations
                     b.Property<DateOnly>("Date")
                         .HasColumnType("date");
 
-                    b.Property<int>("RaceId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RaceId");
+                    b.HasKey("RaceId", "Id");
 
                     b.ToTable("RaceDays");
                 });
 
             modelBuilder.Entity("f1_administraiton_API.Models.SeatingZone", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int>("RaceId")
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    b.Property<int>("RaceDayId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
 
                     b.PrimitiveCollection<string>("Benefits")
                         .IsRequired()
@@ -351,15 +355,10 @@ namespace f1_administraiton_API.Migrations
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("RaceDayId")
-                        .HasColumnType("int");
-
                     b.Property<int>("SeatingType")
                         .HasColumnType("int");
 
-                    b.HasKey("Id");
-
-                    b.HasIndex("RaceDayId");
+                    b.HasKey("RaceId", "RaceDayId", "Id");
 
                     b.ToTable("SeatingZones");
                 });
@@ -404,7 +403,7 @@ namespace f1_administraiton_API.Migrations
 
                     b.HasOne("f1_administraiton_API.Models.SeatingZone", "SeatingZone")
                         .WithMany()
-                        .HasForeignKey("SeatingZoneId")
+                        .HasForeignKey("SeatingZoneRaceId", "SeatingZoneRaceDayId", "SeatingZoneId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -439,7 +438,7 @@ namespace f1_administraiton_API.Migrations
                 {
                     b.HasOne("f1_administraiton_API.Models.RaceDay", "RaceDay")
                         .WithMany()
-                        .HasForeignKey("RaceDayId")
+                        .HasForeignKey("RaceId", "RaceDayId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
