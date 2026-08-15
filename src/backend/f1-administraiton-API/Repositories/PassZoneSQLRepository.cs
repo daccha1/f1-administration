@@ -18,33 +18,47 @@ namespace f1_administraiton_API.Repositories
 		{
 			try
 			{
-				var passId = newPassZone.Pass?.Id ?? 0;
-				var raceId = newPassZone.SeatingZone.RaceDay.RaceId;
-				var raceDayId = newPassZone.SeatingZone.RaceDay.Id;
+				// sta proveravamo?
+				// bitno: da li postoji vec taj passzone
+				// bitno: da li postoji passzone za taj DAN te TRKE tog ID-a
+
+				var raceDayId = newPassZone.SeatingZone.RaceDayId;
+				var raceId = newPassZone.SeatingZone.RaceId;
+				var passId = newPassZone.PassId;
+
+				// U pass zone mora da se dodaju konkretni objekti pass i seatingzone
 
 				var pass = await context.Passes.Where(p => p.Id == passId).FirstOrDefaultAsync();
-				
-				var seatingZone = await context.SeatingZones.Where(s => s.RaceDay.Id == raceId && s.Id ==  raceDayId).FirstOrDefaultAsync();
-				
-				if (pass == null || seatingZone == null)
-				{
-					return null;
-				}
-								
+
+				if (pass == null) throw new Exception("Ne postoji taj PASS");
+
+				var zone = await context.SeatingZones.Where(s => s.RaceDayId == raceDayId && s.RaceId == raceId).FirstOrDefaultAsync();
+
+				if (zone == null) throw new Exception("Ne postoji taj SEATING ZONE");
+
+				newPassZone.SeatingZone = zone;
 				newPassZone.Pass = pass;
-				newPassZone.SeatingZone = seatingZone;
-				
+
+				var existsExact = await context.PassAndZones.Where(pz => pz.SeatingZone.RaceDayId == raceDayId && pz.SeatingZone.RaceId == raceId && pz.PassId == passId).FirstOrDefaultAsync();
+
+				if(existsExact != null)
+				{
+					throw new Exception("POSTOJI VEC TAJ UNOS!");
+				}
+
+				newPassZone.SeatingZone.Benefits = new();
 				await context.PassAndZones.AddAsync(newPassZone);
 				await context.SaveChangesAsync();
-				
 				return newPassZone;
+
 			}
 			catch (Exception ex)
 			{
-				Debug.WriteLine(">>>>>> EX: " + ex.Message);	
+				Debug.WriteLine(">>>>>> EX: " + ex.Message);
 				return null;
 			}
 		}
+
 
 		public async Task<bool> DeletePassZone(int id)
 		{

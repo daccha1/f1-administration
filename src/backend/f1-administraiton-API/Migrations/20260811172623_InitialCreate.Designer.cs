@@ -12,7 +12,7 @@ using f1_administraiton_API.Data;
 namespace f1_administraiton_API.Migrations
 {
     [DbContext(typeof(RaceDbContext))]
-    [Migration("20260725130717_Initial-Create")]
+    [Migration("20260811172623_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -64,6 +64,29 @@ namespace f1_administraiton_API.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Locations");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CircuitName = "Circuit de Monaco",
+                            City = "Monte Carlo",
+                            Coutry = "Monaco"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CircuitName = "Red Bull Ring",
+                            City = "Spielberg",
+                            Coutry = "Austria"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CircuitName = "Yas Marina Circuit",
+                            City = "Abu Dhabi",
+                            Coutry = "United Arab Emirates"
+                        });
                 });
 
             modelBuilder.Entity("f1_administraiton_API.Models.PaddockPass", b =>
@@ -196,11 +219,17 @@ namespace f1_administraiton_API.Migrations
                     b.Property<int>("SeatingZoneId")
                         .HasColumnType("int");
 
+                    b.Property<int>("SeatingZoneRaceDayId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SeatingZoneRaceId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("PassId");
 
-                    b.HasIndex("SeatingZoneId");
+                    b.HasIndex("SeatingZoneRaceId", "SeatingZoneRaceDayId", "SeatingZoneId");
 
                     b.ToTable("PassAndZones");
                 });
@@ -258,53 +287,78 @@ namespace f1_administraiton_API.Migrations
                     b.HasIndex("LocationId");
 
                     b.ToTable("Races");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            AdditionalInfo = "Monaco street circuit race.",
+                            EuroBasePrice = 500.00m,
+                            GrandPrixName = "Monaco Grand Prix",
+                            LocationId = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            AdditionalInfo = "Austrian Grand Prix race.",
+                            EuroBasePrice = 250.00m,
+                            GrandPrixName = "Red Bull Ring",
+                            LocationId = 2
+                        },
+                        new
+                        {
+                            Id = 3,
+                            AdditionalInfo = "Season finale at Yas Marina Circuit.",
+                            EuroBasePrice = 350.00m,
+                            GrandPrixName = "Abu Dhabi GP",
+                            LocationId = 3
+                        });
                 });
 
             modelBuilder.Entity("f1_administraiton_API.Models.RaceDay", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int>("RaceId")
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
 
                     b.Property<int>("Agenda")
                         .HasColumnType("int");
 
-                    b.Property<int>("RaceId")
-                        .HasColumnType("int");
+                    b.Property<DateOnly>("Date")
+                        .HasColumnType("date");
 
-                    b.HasKey("Id");
-
-                    b.HasIndex("RaceId");
+                    b.HasKey("RaceId", "Id");
 
                     b.ToTable("RaceDays");
                 });
 
             modelBuilder.Entity("f1_administraiton_API.Models.SeatingZone", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int>("RaceId")
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    b.Property<int>("RaceDayId")
+                        .HasColumnType("int");
 
-                    b.Property<string>("Benefits")
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.PrimitiveCollection<string>("Benefits")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Capacity")
                         .HasColumnType("int");
 
-                    b.Property<int>("RaceDayId")
-                        .HasColumnType("int");
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("SeatingType")
                         .HasColumnType("int");
 
-                    b.HasKey("Id");
-
-                    b.HasIndex("RaceDayId");
+                    b.HasKey("RaceId", "RaceDayId", "Id");
 
                     b.ToTable("SeatingZones");
                 });
@@ -349,7 +403,7 @@ namespace f1_administraiton_API.Migrations
 
                     b.HasOne("f1_administraiton_API.Models.SeatingZone", "SeatingZone")
                         .WithMany()
-                        .HasForeignKey("SeatingZoneId")
+                        .HasForeignKey("SeatingZoneRaceId", "SeatingZoneRaceDayId", "SeatingZoneId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -384,7 +438,7 @@ namespace f1_administraiton_API.Migrations
                 {
                     b.HasOne("f1_administraiton_API.Models.RaceDay", "RaceDay")
                         .WithMany()
-                        .HasForeignKey("RaceDayId")
+                        .HasForeignKey("RaceId", "RaceDayId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

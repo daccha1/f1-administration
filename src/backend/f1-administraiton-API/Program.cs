@@ -27,7 +27,29 @@ namespace f1_administraiton_API
 			builder.Services.AddEndpointsApiExplorer();
 			builder.Services.AddSwaggerGen();
 
+			builder.Services.AddCors(options =>
+			{
+				// Opcija A: Dozvoljava tvoj konkretni frontend (Preporučeno)
+				options.AddPolicy("AllowFrontend", policy =>
+				{
+					policy.WithOrigins("http://localhost:5173") // URL tvog Vite/React app-a
+						  .AllowAnyHeader()
+						  .AllowAnyMethod()
+						  .AllowCredentials(); // Dodaj ako šalješ cookie-je ili Auth header-e
+				});
+
+				// Opcija B: Dozvoljava doslovno SVE (Samo za lokalni razvoj/testiranje)
+				options.AddPolicy("AllowAll", policy =>
+				{
+					policy.AllowAnyOrigin()
+						  .AllowAnyHeader()
+						  .AllowAnyMethod();
+				});
+			});
+
 			var app = builder.Build();
+
+			app.UseCors("AllowAll");
 
 			// Configure the HTTP request pipeline.
 			if (app.Environment.IsDevelopment())
@@ -35,6 +57,9 @@ namespace f1_administraiton_API
 				app.UseSwagger();
 				app.UseSwaggerUI();
 			}
+
+			
+
 
 			app.UseHttpsRedirection();
 
