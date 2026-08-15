@@ -57,11 +57,10 @@ namespace f1_administraiton_API
 				app.UseSwagger();
 				app.UseSwaggerUI();
 			}
-
-			
-
-
-			app.UseHttpsRedirection();
+			else
+			{
+				app.UseHttpsRedirection();
+			}
 
 			app.UseAuthorization();
 

@@ -26,7 +26,7 @@ namespace f1_administraiton_API.Repositories
 				{
 					return null;
 				}
-				var raceDayExists = await context.RaceDays.AnyAsync(r => r.RaceId == newRaceDay.RaceId && r.Agenda == newRaceDay.Agenda);
+				var raceDayExists = await context.RaceDays.AnyAsync(r => r.RaceId == newRaceDay.RaceId && r.Id == newRaceDay.Id);
 				if (raceDayExists)
 				{
 					return null;
