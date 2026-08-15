@@ -1,13 +1,27 @@
 // PROPS: parent daje keyeve detetu, svaki key je novi objekat,
 
 import Layout from "./Layout.jsx";
-import Race from "./Races.jsx";
-import { useState, useEffect } from "react";
+import LandingPage from "./landing-page/RacesShowcase.jsx";
+import { Routes, Route } from "react-router-dom";
+import RacePreview from "./landing-page/RacePreview.jsx";
+import RacesShowcase from "./landing-page/RacesShowcase.jsx";
+import LandingPageMain from "./landing-page/LandingPageMain.jsx";
 
 const App = () => {
+  const race = {
+    name: "Monaco",
+    circuit: "Circuit de Monaco",
+    length: 1.56,
+    laps: "67",
+  };
+  
   return (
     <Layout>
-      <div className="w-[80%]"></div>
+      <Routes>
+        <Route path="/" element={<LandingPageMain/>} />
+        <Route path="/races" element={<RacesShowcase race={race} />} />
+        <Route path="*" element={<h3 className="text-white">Not found</h3>} />
+      </Routes>
     </Layout>
   );
 };
