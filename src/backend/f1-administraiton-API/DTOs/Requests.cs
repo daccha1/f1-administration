@@ -82,6 +82,7 @@ namespace f1_administraiton_API.DTOs
 	{
 		public int PassId { get; set; }
 		public int SeatingZoneId { get; set; }
+		public SeatingType SeatingType { get; set; }
 		public int RaceDayId { get; set; }
 		public int RaceId { get; set; }
 		public string AdditionalInformation { get; set; } = string.Empty;

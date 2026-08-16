@@ -24,6 +24,7 @@ namespace f1_administraiton_API.Repositories
 
 				var raceDayId = newPassZone.SeatingZone.RaceDayId;
 				var raceId = newPassZone.SeatingZone.RaceId;
+				var seatingZoneId = newPassZone.SeatingZone.Id;
 				var passId = newPassZone.PassId;
 
 				// U pass zone mora da se dodaju konkretni objekti pass i seatingzone
@@ -32,7 +33,7 @@ namespace f1_administraiton_API.Repositories
 
 				if (pass == null) throw new Exception("Ne postoji taj PASS");
 
-				var zone = await context.SeatingZones.Where(s => s.RaceDayId == raceDayId && s.RaceId == raceId).FirstOrDefaultAsync();
+				var zone = await context.SeatingZones.Where(s => s.RaceDayId == raceDayId && s.RaceId == raceId && s.Id == seatingZoneId).FirstOrDefaultAsync();
 
 				if (zone == null) throw new Exception("Ne postoji taj SEATING ZONE");
 
