@@ -22,7 +22,7 @@ const Layout = ({ children }) => {
                 <Link to="/statistics">Statistics</Link>
               </li>
               <button className="bg-blue-600 min-w-[10rem] min-h-[2rem] cursor-pointer rounded-md hover:bg-blue-700 transition hover:duration-400 duration-400">
-                Get a pass!
+                <Link to="/get-pass">Get pass!</Link>
               </button>
             </ul>
           </nav>
