@@ -6,6 +6,7 @@ import { Routes, Route } from "react-router-dom";
 import RacePreview from "./landing-page/RacePreview.jsx";
 import RacesShowcase from "./landing-page/RacesShowcase.jsx";
 import LandingPageMain from "./landing-page/LandingPageMain.jsx";
+import GetPass from "./get-pass/GetPass.jsx";
 
 const App = () => {
   const race = {
@@ -21,6 +22,7 @@ const App = () => {
         <Route path="/" element={<LandingPageMain/>} />
         <Route path="/races" element={<RacesShowcase race={race} />} />
         <Route path="*" element={<h3 className="text-white">Not found</h3>} />
+        <Route path="get-pass" element={<GetPass/>}></Route>
       </Routes>
     </Layout>
   );
